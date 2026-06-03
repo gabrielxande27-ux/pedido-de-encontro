@@ -71,6 +71,12 @@
     select{appearance:none;cursor:pointer;
       background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c2185b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
       background-repeat:no-repeat;background-position:right 1rem center;background-size:1.2rem}
+    .pill-btn{cursor:pointer;font-family:inherit;text-align:left;justify-content:flex-start;
+      width:100%;transition:all .2s;color:hsl(var(--muted-foreground))}
+    .pill-btn:hover{border-color:hsl(var(--primary));transform:translateY(-2px)}
+    .pill-btn.escolhido{color:hsl(var(--primary-foreground));font-weight:700;
+      border-color:hsl(var(--primary));background:hsl(var(--primary)/.18)}
+    .hidden-date{position:absolute;opacity:0;width:1px;height:1px;pointer-events:none;border:none}
     .food-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;width:100%}
     .food{border:2px solid hsl(var(--primary)/.25);border-radius:1.25rem;background:#fff;padding:1rem;
       cursor:pointer;font-family:inherit;font-size:1.05rem;font-weight:700;color:hsl(var(--primary-foreground));
@@ -122,7 +128,8 @@
       <div class="space">
         <div class="field">
           <label>Escolha o Dia ✨</label>
-          <input type="date" id="diaInput">
+          <button type="button" class="pill pill-btn" id="diaPill" onclick="abrirCalendario()">📅 Toque pra escolher o dia</button>
+          <input type="date" id="diaInput" class="hidden-date">
         </div>
         <div class="field">
           <label>Que Horas? ⏰</label>
@@ -169,8 +176,21 @@
   const dataFmt = `${dd}/${mm}/${aaaa}`;
   const isoHoje = `${aaaa}-${mm}-${dd}`;
   const diaInput = document.getElementById('diaInput');
+  const diaPill  = document.getElementById('diaPill');
   diaInput.min = isoHoje;     // calendário só permite hoje
   diaInput.max = isoHoje;     // (campo começa vazio: ela precisa escolher)
+
+  function abrirCalendario(){
+    if (typeof diaInput.showPicker === 'function') { diaInput.showPicker(); }
+    else { diaInput.focus(); diaInput.click(); }
+  }
+  diaInput.addEventListener('change', ()=>{
+    if(diaInput.value){
+      const [a,m,d] = diaInput.value.split('-');
+      diaPill.textContent = `📅 ${d}/${m}/${a} ✅`;
+      diaPill.classList.add('escolhido');
+    }
+  });
 
   // ---- comidas ----
   const comidas = [
