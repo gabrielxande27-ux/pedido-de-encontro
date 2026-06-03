@@ -134,7 +134,7 @@
           </select>
         </div>
       </div>
-      <button class="btn btn-full" onclick="show('s-comida')">marca o encontro! 💌</button>
+      <button class="btn btn-full" onclick="irComida()">marca o encontro! 💌</button>
     </div></div>
   </section>
 
@@ -169,9 +169,8 @@
   const dataFmt = `${dd}/${mm}/${aaaa}`;
   const isoHoje = `${aaaa}-${mm}-${dd}`;
   const diaInput = document.getElementById('diaInput');
-  diaInput.value = isoHoje;   // já vem com hoje selecionado
   diaInput.min = isoHoje;     // calendário só permite hoje
-  diaInput.max = isoHoje;
+  diaInput.max = isoHoje;     // (campo começa vazio: ela precisa escolher)
 
   // ---- comidas ----
   const comidas = [
@@ -191,6 +190,12 @@
     b.onclick=()=>{comidaSel=c.label;[...grid.children].forEach(x=>x.classList.remove('selected'));b.classList.add('selected')};
     grid.appendChild(b);
   });
+
+  // ---- avança da data pra comida (exige escolher o dia) ----
+  function irComida(){
+    if(!diaInput.value){ toast("Escolhe o dia primeiro! 🥺"); return; }
+    show('s-comida');
+  }
 
   // ---- navegação entre telas ----
   function show(id){
