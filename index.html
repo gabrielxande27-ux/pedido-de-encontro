@@ -1,0 +1,274 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1" />
+  <title>Pedido de Encontro</title>
+  <meta name="description" content="Um pedido de encontro feito com carinho 🌸" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root{
+      --background: 32 100% 97%;
+      --primary: 348 100% 86%;
+      --primary-foreground: 340 60% 30%;
+      --secondary: 276 68% 90%;
+      --muted-foreground: 340 15% 45%;
+      --white: 0 0% 100%;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    html,body{height:100%}
+    body{
+      font-family:'Inter',system-ui,sans-serif;
+      background:
+        radial-gradient(circle at 20% 20%, hsl(var(--primary)/.45), transparent 40%),
+        radial-gradient(circle at 80% 30%, hsl(var(--secondary)/.5), transparent 45%),
+        radial-gradient(circle at 50% 90%, hsl(var(--primary)/.35), transparent 50%),
+        hsl(var(--background));
+      min-height:100vh;
+      display:flex;align-items:center;justify-content:center;
+      padding:20px;overflow-x:hidden;
+    }
+    .screen{display:none;width:100%;max-width:460px;animation:pop .5s cubic-bezier(.34,1.56,.64,1)}
+    .screen.active{display:block}
+    @keyframes pop{from{opacity:0;transform:scale(.9) translateY(20px)}to{opacity:1;transform:scale(1) translateY(0)}}
+    .card{
+      border:4px solid hsl(var(--primary)/.25);
+      box-shadow:0 25px 50px -12px hsl(var(--primary)/.3);
+      border-radius:2rem;overflow:hidden;
+      background:hsl(var(--white)/.8);
+      backdrop-filter:blur(8px);
+    }
+    .card-inner{padding:2rem;display:flex;flex-direction:column;align-items:center;text-align:center;gap:1.5rem}
+    .gif{width:12rem;height:12rem;border-radius:1.5rem;overflow:hidden;
+      box-shadow:inset 0 2px 8px rgba(0,0,0,.15);border:4px solid #fff}
+    .gif img{width:100%;height:100%;object-fit:cover}
+    .animate-float{animation:float 3s ease-in-out infinite}
+    @keyframes float{0%,100%{transform:translateY(0)}50%{transform:translateY(-12px)}}
+    h1{font-size:1.9rem;font-weight:800;color:hsl(var(--primary-foreground));line-height:1.2}
+    h1.sm{font-size:1.6rem;line-height:1.45}
+    p.sub{color:hsl(var(--muted-foreground));font-weight:500}
+    p.ps{color:hsl(var(--muted-foreground));font-style:italic;font-weight:500;margin-top:1rem;padding:0 1rem;font-size:.95rem}
+    .btn{
+      font-family:inherit;font-size:1.1rem;font-weight:700;cursor:pointer;border:none;
+      border-radius:9999px;padding:1rem 2rem;color:hsl(var(--primary-foreground));
+      background:hsl(var(--primary));box-shadow:0 10px 20px -5px hsl(var(--primary)/.6);
+      transition:transform .2s;
+    }
+    .btn:hover{transform:scale(1.05)}
+    .btn-secondary{background:hsl(var(--secondary));box-shadow:0 6px 14px -4px hsl(var(--secondary)/.7)}
+    .btn-full{width:100%;height:3.5rem;padding:0;margin-top:.5rem}
+    .btn-row{display:flex;align-items:center;justify-content:center;gap:1rem;width:100%;height:6rem;position:relative}
+    .btn-no{position:absolute;left:60%;transition:transform .25s cubic-bezier(.34,1.56,.64,1)}
+    .field{width:100%;text-align:left}
+    label{display:block;font-size:.85rem;font-weight:700;color:hsl(var(--primary-foreground));margin:0 0 .4rem .5rem}
+    .pill,select{
+      width:100%;height:3.5rem;border-radius:1rem;border:2px solid hsl(var(--primary)/.3);
+      background:#fff;font-family:inherit;font-size:1.05rem;padding:0 1rem;color:hsl(var(--primary-foreground));
+      display:flex;align-items:center;font-weight:600;
+    }
+    select{appearance:none;cursor:pointer;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23c2185b' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat:no-repeat;background-position:right 1rem center;background-size:1.2rem}
+    .food-grid{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;width:100%}
+    .food{border:2px solid hsl(var(--primary)/.25);border-radius:1.25rem;background:#fff;padding:1rem;
+      cursor:pointer;font-family:inherit;font-size:1.05rem;font-weight:700;color:hsl(var(--primary-foreground));
+      display:flex;align-items:center;gap:.6rem;transition:all .2s}
+    .food:hover{transform:translateY(-3px)}
+    .food.selected{border-color:hsl(var(--primary));background:hsl(var(--primary)/.2);box-shadow:0 8px 18px -6px hsl(var(--primary)/.6)}
+    .food .em{font-size:1.5rem}
+    .space{display:flex;flex-direction:column;gap:1rem;width:100%}
+    .toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(120px);
+      background:#fff;border:2px solid hsl(var(--primary));color:hsl(var(--primary-foreground));
+      padding:.9rem 1.4rem;border-radius:1rem;font-weight:700;box-shadow:0 12px 30px rgba(0,0,0,.15);
+      transition:transform .4s cubic-bezier(.34,1.56,.64,1);z-index:50}
+    .toast.show{transform:translateX(-50%) translateY(0)}
+    .confetti{position:fixed;width:10px;height:10px;border-radius:2px;top:50%;left:50%;
+      background:var(--c);opacity:0;pointer-events:none;z-index:1}
+    .confetti.go{animation:conf 1.6s ease-out forwards}
+    @keyframes conf{0%{opacity:1;transform:translate(0,0) rotate(0)}
+      100%{opacity:0;transform:translate(var(--tx),var(--ty)) rotate(720deg)}}
+  </style>
+</head>
+<body>
+
+  <!-- 1. PERGUNTA -->
+  <section class="screen active" id="s-pergunta">
+    <div class="card"><div class="card-inner">
+      <div class="gif animate-float"><img src="https://media.giphy.com/media/vFKqnCdLPNOKc/giphy.gif" alt="gatinho fofo"></div>
+      <h1>🌸 Quer sair num encontro comigo? 🌸</h1>
+      <div class="btn-row">
+        <button class="btn" onclick="show('s-yay');burst()">SIM 💕</button>
+        <button class="btn btn-secondary btn-no" id="btnNao" onmouseenter="foge()" onclick="foge()">não… 🙈</button>
+      </div>
+    </div></div>
+  </section>
+
+  <!-- 2. YAY -->
+  <section class="screen" id="s-yay">
+    <div class="card"><div class="card-inner">
+      <div class="gif"><img src="https://media.tenor.com/W-oA2c99rJQAAAAM/spongebob-spongebob-squarepants.gif" alt="bob esponja surpreso"></div>
+      <h1 class="sm">PERAÍ, VOCÊ DISSE SIM MESMO?? 😭</h1>
+      <p class="sub">Eu já tava pronto pra você dizer não 🥹</p>
+      <button class="btn btn-full" onclick="show('s-data')">tá bom, tá bom! →</button>
+    </div></div>
+  </section>
+
+  <!-- 3. DATA E HORA -->
+  <section class="screen" id="s-data">
+    <div class="card"><div class="card-inner">
+      <h1 class="sm">Então… quando você tá livre?</h1>
+      <div class="space">
+        <div class="field">
+          <label>Escolha o Dia ✨</label>
+          <input type="date" id="diaInput">
+        </div>
+        <div class="field">
+          <label>Que Horas? ⏰</label>
+          <select id="horaSel">
+            <option value="17:00">17:00 — a gente come com os aposentados 👵</option>
+            <option value="18:00">18:00 — quase lá, mas 20h que é o certo 😏</option>
+            <option value="19:00">19:00 — você já tá me dando fome 🤤</option>
+            <option value="20:00" selected>20:00 — ESSE é o horário certo kkk 💯</option>
+          </select>
+        </div>
+      </div>
+      <button class="btn btn-full" onclick="show('s-comida')">marca o encontro! 💌</button>
+    </div></div>
+  </section>
+
+  <!-- 4. COMIDA -->
+  <section class="screen" id="s-comida">
+    <div class="card"><div class="card-inner">
+      <h1 class="sm">O que a gente tá afim? 🍜✨</h1>
+      <div class="food-grid" id="foodGrid"></div>
+      <button class="btn btn-full" onclick="enviar()">esse aqui! →</button>
+    </div></div>
+  </section>
+
+  <!-- 5. CARTINHA -->
+  <section class="screen" id="s-cartinha">
+    <div class="card"><div class="card-inner">
+      <div class="gif"><img src="https://media.tenor.com/mtiOW6O-k8YAAAAM/shrek-shrek-rizz.gif" alt="shrek"></div>
+      <h1 class="sm">que bom que você não disse não. fica pronta às 20h, eu vou te buscar 🚗</h1>
+      <p class="ps">P.S. gente normal manda mensagem. eu fiz um site no Replit. na hora do almoço. pra você. de boa.</p>
+    </div></div>
+  </section>
+
+  <div class="toast" id="toast"></div>
+
+<script>
+  const EMAIL = "gabriel.xande27@gmail.com";
+
+  // ---- data de hoje fixa ----
+  const hoje = new Date();
+  const dd = String(hoje.getDate()).padStart(2,'0');
+  const mm = String(hoje.getMonth()+1).padStart(2,'0');
+  const aaaa = hoje.getFullYear();
+  const dataFmt = `${dd}/${mm}/${aaaa}`;
+  const isoHoje = `${aaaa}-${mm}-${dd}`;
+  const diaInput = document.getElementById('diaInput');
+  diaInput.value = isoHoje;   // já vem com hoje selecionado
+  diaInput.min = isoHoje;     // calendário só permite hoje
+  diaInput.max = isoHoje;
+
+  // ---- comidas ----
+  const comidas = [
+    {id:'pizza', em:'🍕', label:'Pizza'},
+    {id:'sushi', em:'🍣', label:'Sushi'},
+    {id:'burger',em:'🍔', label:'Hambúrguer'},
+    {id:'massa', em:'🍝', label:'Massa'},
+    {id:'tacos', em:'🌮', label:'Tacos'},
+    {id:'lamen', em:'🍜', label:'Lámen'},
+  ];
+  let comidaSel = null;
+  const grid = document.getElementById('foodGrid');
+  comidas.forEach(c=>{
+    const b = document.createElement('button');
+    b.className='food';
+    b.innerHTML=`<span class="em">${c.em}</span>${c.label}`;
+    b.onclick=()=>{comidaSel=c.label;[...grid.children].forEach(x=>x.classList.remove('selected'));b.classList.add('selected')};
+    grid.appendChild(b);
+  });
+
+  // ---- navegação entre telas ----
+  function show(id){
+    document.querySelectorAll('.screen').forEach(s=>s.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0,0);
+  }
+
+  // ---- botão "não" que foge ----
+  let nx=0, ny=0;
+  function foge(){
+    const b = document.getElementById('btnNao');
+    const r = b.getBoundingClientRect();
+    const margin = 12;
+    const baseX = r.left - nx, baseY = r.top - ny;          // posição sem transform
+    const maxX = window.innerWidth  - r.width  - margin;
+    const maxY = window.innerHeight - r.height - margin;
+    let finalLeft, finalTop, tries = 0;
+    do {
+      finalLeft = baseX + nx + (Math.random()-.5)*240;
+      finalTop  = baseY + ny + (Math.random()-.5)*240;
+      tries++;
+    } while ((finalLeft<margin||finalLeft>maxX||finalTop<margin||finalTop>maxY) && tries<25);
+    // garante que continua dentro da tela
+    finalLeft = Math.min(Math.max(finalLeft, margin), Math.max(margin, maxX));
+    finalTop  = Math.min(Math.max(finalTop,  margin), Math.max(margin, maxY));
+    nx = finalLeft - baseX;
+    ny = finalTop  - baseY;
+    b.style.transform = `translate(${nx}px, ${ny}px)`;
+  }
+
+  // ---- confete ----
+  function burst(){
+    const cores = ["#FFB7C5","#FFF8F0","#E8D5F5","#FFD700","#FF69B4","#87CEFA"];
+    for(let i=0;i<100;i++){
+      const d=document.createElement('div');
+      d.className='confetti';
+      const ang=Math.random()*Math.PI*2, dist=150+Math.random()*350;
+      d.style.setProperty('--c',cores[Math.floor(Math.random()*cores.length)]);
+      d.style.setProperty('--tx',Math.cos(ang)*dist+'px');
+      d.style.setProperty('--ty',Math.sin(ang)*dist+'px');
+      d.style.animationDelay=(Math.random()*.2)+'s';
+      document.body.appendChild(d);
+      requestAnimationFrame(()=>d.classList.add('go'));
+      setTimeout(()=>d.remove(),1900);
+    }
+  }
+
+  function toast(msg){
+    const t=document.getElementById('toast');
+    t.textContent=msg;t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'),3000);
+  }
+
+  // ---- envio do resultado por e-mail ----
+  async function enviar(){
+    if(!comidaSel){ toast("Escolhe uma comida primeiro! 🥺"); return; }
+    const hora = document.getElementById('horaSel').value;
+
+    const payload = {
+      _subject: "💕 Ela disse SIM ao encontro!",
+      "Resposta": "SIM 💕",
+      "Dia": `Hoje — ${dataFmt}`,
+      "Horário": hora,
+      "Comida escolhida": comidaSel,
+    };
+
+    show('s-cartinha');
+    burst();
+
+    try{
+      await fetch("https://formsubmit.co/ajax/"+EMAIL, {
+        method:"POST",
+        headers:{ "Content-Type":"application/json", "Accept":"application/json" },
+        body: JSON.stringify(payload),
+      });
+    }catch(e){ /* silencioso: a cartinha já apareceu */ }
+  }
+</script>
+</body>
+</html>
